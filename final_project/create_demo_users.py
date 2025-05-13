@@ -1,12 +1,11 @@
 from app import create_app, db
 from app.models import Role, User
-from werkzeug.security import generate_password_hash
 
 app = create_app()
 
 with app.app_context():
-    # Asegurarse de que los roles existen
-    roles = ['Admin', 'Professor', 'Student']
+    # Crear roles si no existen
+    roles = ['Admin', 'Médico', 'Paciente']
     for role_name in roles:
         existing_role = Role.query.filter_by(name=role_name).first()
         if not existing_role:
@@ -16,25 +15,25 @@ with app.app_context():
 
     db.session.commit()
 
-    # Diccionario con usuarios a insertar
+    # Usuarios de ejemplo
     users_data = [
         {
-            "username": "Administrator",
-            "email": "admin@example.com",
+            "username": "Administrador General",
+            "email": "admin@clinica.com",
             "password": "admin123",
             "role_name": "Admin"
         },
         {
-            "username": "John Doe",
-            "email": "prof@example.com",
-            "password": "prof123",
-            "role_name": "Professor"
+            "username": "Dra. Ana Torres",
+            "email": "medico@clinica.com",
+            "password": "medico123",
+            "role_name": "Médico"
         },
         {
-            "username": "Steve Jobs",
-            "email": "student@example.com",
-            "password": "student123",
-            "role_name": "Student"
+            "username": "Carlos Pérez",
+            "email": "paciente@correo.com",
+            "password": "paciente123",
+            "role_name": "Paciente"
         }
     ]
 
@@ -47,7 +46,7 @@ with app.app_context():
                 email=user_info['email'],
                 role=role
             )
-            user.set_password(user_info['password'])  # Genera hash seguro
+            user.set_password(user_info['password'])
             db.session.add(user)
             print(f'✅ Usuario "{user.username}" creado con rol "{role.name}".')
         else:

@@ -1,93 +1,86 @@
 from flask import Blueprint, request, jsonify
-from app.models import db, Curso
+from app.models import db, Cita
+from datetime import datetime
 
-# Blueprint solo con endpoints de prueba para cursos
-main = Blueprint('main', __name__)
+api = Blueprint('api', __name__)
 
-@main.route('/') # Ambas rutas llevan al mismo lugar
-@main.route('/dashboard')
+@api.route('/')
+@api.route('/dashboard')
 def index():
-    """
-    Página de inicio pública (home).
-    """
-    return '<h1>Corriendo en Modo de Prueba.</h1>'
+    return '<h1>API de Citas Médicas - Corriendo</h1>'
 
-@main.route('/cursos', methods=['GET'])
-def listar_cursos():
-    """
-    Retorna una lista de cursos (JSON).
-    """
-    cursos = Curso.query.all()
-
+# GET todas las citas
+@api.route('/citas', methods=['GET'])
+def listar_citas():
+    citas = Cita.query.all()
     data = [
-        {'id': curso.id, 'titulo': curso.titulo, 'descripcion': curso.descripcion, 'profesor_id': curso.profesor_id}
-        for curso in cursos
+        {
+            'id': cita.id,
+            'fecha_hora': cita.fecha_hora.strftime('%Y-%m-%d %H:%M'),
+            'medico_id': cita.medico_id,
+            'paciente_id': cita.paciente_id,
+            'motivo': cita.motivo,
+            'estado': cita.estado
+        }
+        for cita in citas
     ]
     return jsonify(data), 200
 
-
-@main.route('/cursos/<int:id>', methods=['GET'])
-def listar_un_curso(id):
-    """
-    Retorna un solo curso por su ID (JSON).
-    """
-    curso = Curso.query.get_or_404(id)
-
+# GET cita por ID
+@api.route('/citas/<int:id>', methods=['GET'])
+def obtener_cita(id):
+    cita = Cita.query.get_or_404(id)
     data = {
-        'id': curso.id,
-        'titulo': curso.titulo,
-        'descripcion': curso.descripcion,
-        'profesor_id': curso.profesor_id
+        'id': cita.id,
+        'fecha_hora': cita.fecha_hora.strftime('%Y-%m-%d %H:%M'),
+        'medico_id': cita.medico_id,
+        'paciente_id': cita.paciente_id,
+        'motivo': cita.motivo,
+        'estado': cita.estado,
+        'observaciones': cita.observaciones
     }
-
     return jsonify(data), 200
 
+# POST crear nueva cita
+@api.route('/citas', methods=['POST'])
+def crear_cita():
+    data = request.get_json()
+    try:
+        cita = Cita(
+            fecha_hora=datetime.strptime(data['fecha_hora'], '%Y-%m-%d %H:%M'),
+            medico_id=data['medico_id'],
+            paciente_id=data['paciente_id'],
+            motivo=data['motivo'],
+            estado=data.get('estado', 'Agendada'),
+            observaciones=data.get('observaciones', '')
+        )
+        db.session.add(cita)
+        db.session.commit()
+        return jsonify({'message': 'Cita creada', 'id': cita.id}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
-@main.route('/cursos', methods=['POST'])
-def crear_curso():
-    """
-    Crea un curso sin validación.
-    Espera JSON con 'titulo', 'descripcion' y 'profesor_id'.
-    """
+# PUT actualizar cita
+@api.route('/citas/<int:id>', methods=['PUT'])
+def actualizar_cita(id):
+    cita = Cita.query.get_or_404(id)
     data = request.get_json()
 
-    if not data:
-        return jsonify({'error': 'No input data provided'}), 400
-
-    curso = Curso(
-        titulo=data.get('titulo'),
-        descripcion=data.get('descripcion'),
-        profesor_id=data.get('profesor_id')  # sin validación de usuario
-    )
-
-    db.session.add(curso)
-    db.session.commit()
-
-    return jsonify({'message': 'Curso creado', 'id': curso.id, 'profesor_id': curso.profesor_id}), 201
-
-@main.route('/cursos/<int:id>', methods=['PUT'])
-def actualizar_curso(id):
-    """
-    Actualiza un curso sin validación de usuario o permisos.
-    """
-    curso = Curso.query.get_or_404(id)
-    data = request.get_json()
-
-    curso.titulo = data.get('titulo', curso.titulo)
-    curso.descripcion = data.get('descripcion', curso.descripcion)
-    curso.profesor_id = data.get('profesor_id', curso.profesor_id)
+    if 'fecha_hora' in data:
+        cita.fecha_hora = datetime.strptime(data['fecha_hora'], '%Y-%m-%d %H:%M')
+    cita.medico_id = data.get('medico_id', cita.medico_id)
+    cita.paciente_id = data.get('paciente_id', cita.paciente_id)
+    cita.motivo = data.get('motivo', cita.motivo)
+    cita.estado = data.get('estado', cita.estado)
+    cita.observaciones = data.get('observaciones', cita.observaciones)
 
     db.session.commit()
+    return jsonify({'message': 'Cita actualizada', 'id': cita.id}), 200
 
-    return jsonify({'message': 'Curso actualizado', 'id': curso.id}), 200
-
-@main.route('/cursos/<int:id>', methods=['DELETE'])
-def eliminar_curso(id):
-    """
-    Elimina un curso sin validación de permisos.
-    """
-    curso = Curso.query.get_or_404(id)
-    db.session.delete(curso)
+# DELETE eliminar cita
+@api.route('/citas/<int:id>', methods=['DELETE'])
+def eliminar_cita(id):
+    cita = Cita.query.get_or_404(id)
+    db.session.delete(cita)
     db.session.commit()
-
-    return jsonify({'message': 'Curso eliminado', 'id': curso.id}), 200
+    return jsonify({'message': 'Cita eliminada', 'id': cita.id}), 200

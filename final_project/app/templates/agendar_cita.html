@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Agendar Cita{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Agendar Nueva Cita</h2>
+
+<form method="POST" novalidate>
+  {{ form.hidden_tag() }}
+
+  <!-- Médico -->
+  <div class="mb-3">
+    {{ form.medico_id.label(class="form-label") }}
+    {{ form.medico_id(class="form-select") }}
+  </div>
+
+  <!-- Fecha y hora -->
+  <div class="mb-3">
+    {{ form.fecha_hora.label(class="form-label") }}
+    {{ form.fecha_hora(class="form-control") }}
+  </div>
+
+  <!-- Motivo -->
+  <div class="mb-3">
+    {{ form.motivo.label(class="form-label") }}
+    {{ form.motivo(class="form-control") }}
+  </div>
+
+  <!-- Botón -->
+  <div class="mb-3">
+    {{ form.submit(class="btn btn-primary") }}
+  </div>
+</form>
+{% endblock %}

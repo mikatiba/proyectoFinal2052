@@ -14,12 +14,12 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
 
-    from app.routes import main 
-    # from app.test_routes import main
-    
-    from app.auth_routes import auth
+    # Importa los blueprints actuales
+    from app.auth_service.routes import auth
+    from app.appointment_service.routes import appointments
 
-    app.register_blueprint(main)
+    # Registrar los blueprints
     app.register_blueprint(auth)
+    app.register_blueprint(appointments)
 
     return app

@@ -1,57 +1,45 @@
-{% extends "layout.html" %} {% block title %}Dashboard{% endblock %} {% block
-content %}
-<div class="row">
+{% extends "layout.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
   <div class="col">
-    <h3>Course Management</h3>
+    <h3>Gestión de Citas Médicas</h3>
   </div>
   <div class="col text-end">
-    <!-- Change the next line for your project -->
-    {% if current_user.role.name != 'Student' %}
-    <a class="btn btn-primary mb-3 me-2" href="{{ url_for('main.cursos') }}">
-      <i class="bi bi-plus"></i> New
+    {% if current_user.role.name == 'Paciente' %}
+    <a class="btn btn-success" href="{{ url_for('appointments.agendar_cita') }}">
+      <i class="bi bi-plus-circle"></i> Agendar nueva cita
     </a>
     {% endif %}
   </div>
 </div>
 
+{% if citas %}
 <table class="table table-bordered table-hover">
   <thead class="table-light">
     <tr>
-      <th>Title</th>
-      <th>Description</th>
-      <th>Instructor</th>
-      <th class="text-center">Actions</th>
+      <th>Fecha y Hora</th>
+      <th>Médico</th>
+      <th>Paciente</th>
+      <th>Motivo</th>
+      <th>Estado</th>
+      <th class="text-center">Acciones</th>
     </tr>
   </thead>
   <tbody>
-    {% for curso in cursos %}
+    {% for cita in citas %}
     <tr>
-      <td>{{ curso.titulo }}</td>
-      <td>{{ curso.descripcion }}</td>
-      <td>{{ curso.profesor.username }}</td>
-      <td class="text-center ps-0 pe-0">
-        {% if current_user.role.name == 'Admin' or curso.profesor_id ==
-        current_user.id %}
-
-        <a
-          class="btn btn-sm btn-warning"
-          href="{{ url_for('main.editar_curso', id=curso.id) }}"
-          title="Edit course"
-        >
-          <i class="bi bi-pencil"></i>
-        </a>
-        <form
-          method="POST"
-          action="{{ url_for('main.eliminar_curso', id=curso.id) }}"
-          style="display: inline"
-          onsubmit="return confirm('Are you sure you want to delete this course?');"
-        >
-          <button
-            type="submit"
-            class="btn btn-sm btn-danger"
-            title="Delete course"
-          >
-            <i class="bi bi-trash"></i>
+      <td>{{ cita.fecha_hora.strftime("%d/%m/%Y %H:%M") }}</td>
+      <td>{{ cita.medico.username }}</td>
+      <td>{{ cita.paciente.username }}</td>
+      <td>{{ cita.motivo }}</td>
+      <td>{{ cita.estado }}</td>
+      <td class="text-center">
+        {% if (current_user.id == cita.paciente_id or current_user.id == cita.medico_id or current_user.role.name == 'Admin') and cita.estado != 'Cancelada' %}
+        <form method="POST" action="{{ url_for('appointments.cancelar_cita', id=cita.id) }}" style="display:inline;">
+          <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Cancelar esta cita?');">
+            <i class="bi bi-x-circle"></i> Cancelar
           </button>
         </form>
         {% else %}
@@ -62,10 +50,7 @@ content %}
     {% endfor %}
   </tbody>
 </table>
-
-<!-- Change the next line for your project -->
-{% if current_user.role.name == 'Student' %}
-<p class="text-center pe-3 mt-0 text-body-tertiary fw-lighter fst-italic">
-  You do not have permission to create, update or delete courses.
-</p>
-{% endif %} {% endblock %}
+{% else %}
+<p class="text-muted">No hay citas registradas.</p>
+{% endif %}
+{% endblock %}

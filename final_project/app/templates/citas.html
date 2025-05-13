@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Mis Citas{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Listado de Citas</h2>
+
+{% if citas %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Fecha y Hora</th>
+        <th>Médico</th>
+        <th>Paciente</th>
+        <th>Motivo</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cita in citas %}
+        <tr>
+          <td>{{ cita.fecha_hora.strftime("%d/%m/%Y %H:%M") }}</td>
+          <td>{{ cita.medico.username }}</td>
+          <td>{{ cita.paciente.username }}</td>
+          <td>{{ cita.motivo }}</td>
+          <td>{{ cita.estado }}</td>
+          <td>
+            {% if current_user.id == cita.paciente_id or current_user.id == cita.medico_id or current_user.role.name == 'Admin' %}
+              {% if cita.estado != 'Cancelada' %}
+                <form method="POST" action="{{ url_for('appointments.cancelar_cita', id=cita.id) }}">
+                  <button type="submit" class="btn btn-sm btn-danger">Cancelar</button>
+                </form>
+              {% else %}
+                <span class="text-muted">Cancelada</span>
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="text-muted">No hay citas registradas.</p>
+{% endif %}
+{% endblock %}

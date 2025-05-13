@@ -1,37 +1,42 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, DateTimeLocalField 
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 # Formulario para login de usuario
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')
+    email = StringField('Correo electrónico', validators=[DataRequired(), Email()])
+    password = PasswordField('Contraseña', validators=[DataRequired()])
+    submit = SubmitField('Iniciar sesión')
 
-# Formulario para registrar un nuevo usuario
+# Formulario para registrar un nuevo usuario (Admin, Médico o Paciente)
 class RegisterForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm password', validators=[DataRequired(), EqualTo('password')])
+    username = StringField('Nombre de usuario', validators=[DataRequired()])
+    email = StringField('Correo electrónico', validators=[DataRequired(), Email()])
+    password = PasswordField('Contraseña', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirmar contraseña', validators=[DataRequired(), EqualTo('password')])
     
     role = SelectField(
-        'Role',
-        choices=[('Student', 'Student'), ('Professor', 'Professor')],
+        'Rol',
+        choices=[('Admin', 'Admin'), ('Médico', 'Médico'), ('Paciente', 'Paciente')],
         validators=[DataRequired()]
     )
 
-    submit = SubmitField('Register')
+    submit = SubmitField('Registrarse')
 
 # Formulario para cambiar la contraseña del usuario
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('Current password', validators=[DataRequired()])
-    new_password = PasswordField('New password', validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirm new password', validators=[DataRequired(), EqualTo('new_password')])
-    submit = SubmitField('Update Password')
+    old_password = PasswordField('Contraseña actual', validators=[DataRequired()])
+    new_password = PasswordField('Nueva contraseña', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirmar nueva contraseña', validators=[DataRequired(), EqualTo('new_password')])
+    submit = SubmitField('Actualizar contraseña')
 
-# Formulario para crear o editar un curso
-class CursoForm(FlaskForm):
-    titulo = StringField('Course title', validators=[DataRequired()])
-    descripcion = TextAreaField('Description', validators=[DataRequired()])
-    submit = SubmitField('Save')
+# Formulario para agendar una cita médica
+class AgendarCitaForm(FlaskForm):
+    fecha_hora = DateTimeLocalField(
+        'Fecha y Hora',
+        format='%Y-%m-%dT%H:%M',
+        validators=[DataRequired()]
+    )
+    motivo = TextAreaField('Motivo', validators=[DataRequired()])
+    medico_id = SelectField('Médico', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Agendar')
