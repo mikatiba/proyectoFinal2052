@@ -1,11 +1,14 @@
-{% extends "layout.html" %} {% block title %}Home{% endblock %} {% block content
-%}
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
 <div class="text-center">
   <h1 class="mt-5">Welcome to the Medical Appointment Manager</h1>
-  {% if current_user.id %}
-  <p class="lead text-muted">Select the Dashboard option to view the data.</p>
+
+  {% if current_user.is_authenticated %}
+    <p class="lead text-muted">Selecciona la opción de Dashboard para ver tus citas.</p>
   {% else %}
-  <p class="lead text-body-secondary">Please log in or register to continue.</p>
+    <p class="lead text-body-secondary">Inicia sesión o regístrate para continuar.</p>
   {% endif %}
 </div>
 {% endblock %}
