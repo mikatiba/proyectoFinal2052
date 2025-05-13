@@ -1,6 +1,6 @@
 ### Crear un nuevo curso (POST)
 
-POST http://localhost:5000/cursos
+POST http://localhost:5000/citas
 Content-Type: application/json
 
 {
