@@ -1,3 +1,4 @@
 ### Obtener una cita específica por ID
-GET http://localhost:5001/test/citas/2
+GET http://localhost:5001/test/citas/7
+
 Content-Type: application/json
