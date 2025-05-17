@@ -1,11 +1,7 @@
-### Editar un curso (POST)
-
-# Simular POST con nuevos datos del curso
-
-PUT http://localhost:5000/cursos/4
+PUT http://localhost:5001/test/citas/1 HTTP/1.1
 Content-Type: application/json
 
 {
-  "titulo": "Curso actualizado",
-  "descripcion": "Nueva descripción actualizada"
+  "motivo": "Dolor de espalda actualizado",
+  "estado": "Realizada"
 }
