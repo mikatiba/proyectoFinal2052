@@ -1,4 +1,7 @@
 from app import create_app
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # Crea la instancia de la aplicación Flask utilizando la factoría
 app = create_app()
