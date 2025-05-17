@@ -43,7 +43,7 @@
             <!-- Listar usuarios solo para los administradores -->
             {% if current_user.role.name == 'Admin' %}
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.listar_usuarios') }}"
+              <a class="nav-link" href="{{ url_for('appointments.listar_usuarios') }}"
                 >Users</a
               >
             </li>

@@ -112,3 +112,22 @@ def listar_usuarios():
 
     usuarios = User.query.join(User.role).all()
     return render_template('usuarios.html', usuarios=usuarios)
+
+@appointments.route('/realizar/<int:id>', methods=['POST'])
+@login_required
+def marcar_cita_realizada(id):
+    """
+    Permite marcar una cita como 'Realizada' si el usuario es Admin o el Médico asignado.
+    """
+    cita = Cita.query.get_or_404(id)
+
+    if current_user.role.name == 'Admin' or \
+       (current_user.role.name == 'Médico' and cita.medico_id == current_user.id):
+
+        cita.estado = 'Realizada'
+        db.session.commit()
+        flash('La cita fue marcada como realizada.', 'success')
+    else:
+        flash('No tienes permiso para realizar esta acción.', 'danger')
+
+    return redirect(url_for('appointments.dashboard'))

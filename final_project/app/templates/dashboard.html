@@ -36,14 +36,23 @@
       <td>{{ cita.motivo }}</td>
       <td>{{ cita.estado }}</td>
       <td class="text-center">
-        {% if (current_user.id == cita.paciente_id or current_user.id == cita.medico_id or current_user.role.name == 'Admin') and cita.estado != 'Cancelada' %}
-        <form method="POST" action="{{ url_for('appointments.cancelar_cita', id=cita.id) }}" style="display:inline;">
-          <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Cancelar esta cita?');">
-            <i class="bi bi-x-circle"></i> Cancelar
-          </button>
-        </form>
+        {% if cita.estado == 'Agendada' and (current_user.id == cita.paciente_id or current_user.id == cita.medico_id or current_user.role.name == 'Admin') %}
+          <form method="POST" action="{{ url_for('appointments.cancelar_cita', id=cita.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Cancelar esta cita?');">
+              <i class="bi bi-x-circle"></i> Cancelar
+            </button>
+          </form>
+
+          {% if current_user.role.name == 'Médico' and cita.medico_id == current_user.id %}
+          <form method="POST" action="{{ url_for('appointments.marcar_cita_realizada', id=cita.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('¿Marcar esta cita como realizada?');">
+              <i class="bi bi-check-circle"></i> Realizar
+            </button>
+          </form>
+          {% endif %}
+
         {% else %}
-        <span class="text-muted"><i class="bi bi-lock"></i></span>
+          <span class="text-muted"><i class="bi bi-lock"></i></span>
         {% endif %}
       </td>
     </tr>
