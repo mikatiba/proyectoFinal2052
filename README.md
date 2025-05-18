@@ -1,6 +1,6 @@
 # 🏥 Sistema de Citas Médicas
 
-📄 [Ver documentación del proyecto (PDF)](final_project/pdf/gestion_consultas_medicas_app_doc (1).pdf)
+[📄 Ver documentación del proyecto (PDF)](final_project/pdf/gestion_consultas_medicas_app_doc%20(1).pdf)
 
 Este proyecto fue desarrollado como parte del curso **COMP2052 - Web Development with Server-Side and Microservices** en la Universidad Interamericana de Puerto Rico. El objetivo principal fue crear una aplicación web funcional para gestionar citas médicas según el rol de cada usuario (Administrador, Médico o Paciente).
 
